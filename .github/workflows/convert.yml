@@ -1,0 +1,34 @@
+on:
+  workflow_dispatch:
+    inputs: 
+      wingetid:
+        description: 'source package name in winget'
+        required: true
+        type: string
+      chocoid:
+        description: 'destination package name in chocolatey'
+        required: true
+        type: string
+
+jobs:
+  convert-winget-package-to-chocolatey:
+    runs-on: ${{ matrix.os.runs-on }}
+
+    strategy:
+      matrix:
+        os: 
+          - runs-on: windows-latest
+            arch: win-x64
+          
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: download winget package repo
+      run: git clone https://github.com/microsoft/winget-pkgs --depth 1
+
+    - name: convert winget package to chocolatey package with wg2choco.py
+      run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }}
+    
+    - name: choco pack
+      run: choco pack ${{ inputs.chocoid }}
+    
