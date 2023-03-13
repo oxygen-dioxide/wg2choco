@@ -33,5 +33,16 @@ jobs:
       run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }}
     
     - name: choco pack
-      run: choco pack ${{ inputs.chocoid }}
+      run: choco pack ${{ inputs.chocoid }}/${{ inputs.chocoid }}.nuspec
     
+    - name: test choco package install
+      run: cinst ${{ inputs.chocoid }}/${{ inputs.chocoid }}.${{ env.version }}.nupkg
+    
+    - name: test choco package uninstall
+      run: cuninst ${{ inputs.chocoid }}
+    
+    - name: upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ inputs.chocoid }}.${{ env.version }}.nupkg
+        path: ${{ inputs.chocoid }}/${{ inputs.chocoid }}.${{ env.version }}.nupkg

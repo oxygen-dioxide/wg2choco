@@ -10,6 +10,7 @@ rootpath=pathlib.Path(sys.argv[0]).resolve().parent
 winget_software_path=rootpath.joinpath("winget-pkgs","manifests",winget_id[0][0].lower(),*winget_id)
 #最新版本号
 version=str(max([packaging.version.parse(versionpath.name) for versionpath in winget_software_path.iterdir()]))
+os.system(f"echo \"version={version}\" >> $GITHUB_ENV")
 winget_package_path=winget_software_path.joinpath(version)
 print("Winget package is located in",winget_package_path)
 #解析winget包
@@ -23,13 +24,13 @@ for filepath in winget_package_path.iterdir():
     else:
         basicinfo=yaml.load(filepath.open(encoding="utf8"),Loader=yaml.BaseLoader)
 #在choco包中需要用到的信息
-chocoid=winget_id[1]
+chocoid=sys.argv[2]#choco包名
 chocoinfo={
     "id":chocoid,
     "version":version,
     "title":localeinfo["PackageName"],
     "projectUrl":localeinfo["PackageUrl"],
-    "tags":" ".join(localeinfo["Tags"]),
+    "tags":" ".join(localeinfo.get("Tags",[])),
     "summary":localeinfo["ShortDescription"],
     "description":localeinfo["ShortDescription"],
     "installerUrl":installerinfo["Installers"][0]["InstallerUrl"],
