@@ -13,7 +13,10 @@ winget_software_path=rootpath.joinpath("winget-pkgs","manifests",winget_id[0][0]
 
 #最新版本号
 version=str(max([packaging.version.parse(versionpath.name) for versionpath in winget_software_path.iterdir()]))
-github_action_utils.set_env("version",version)
+try:
+    github_action_utils.set_env("version",version)
+except:
+    pass
 winget_package_path=winget_software_path.joinpath(version)
 print("Winget package is located in",winget_package_path)
 
@@ -40,14 +43,23 @@ chocoinfo={
     "installerUrl":installerinfo["Installers"][0]["InstallerUrl"],
     "installerSha256":installerinfo["Installers"][0]["InstallerSha256"],
 }
-if("Author") in localeinfo:
+if("Author" in localeinfo):
     chocoinfo["authors"]=localeinfo["Author"]
 else:
     chocoinfo["authors"]=winget_id[0]
-if("InstallerType") in installerinfo:
-    installertype=installerinfo["InstallerType"]
+
+if("Installers" in installerinfo):
+    installer = installerinfo | installerinfo["Installers"][0]
 else:
-    installertype=installerinfo["Installers"][0]["InstallerType"]
+    installer = installerinfo
+installertype=installer["InstallerType"]
+#import ipdb
+#ipdb.set_trace()
+if("InstallerSwitches" in installer):
+    if("SilentWithProgress" in installer["InstallerSwitches"]):
+        chocoinfo["silentArgs"]=installer["InstallerSwitches"]["SilentWithProgress"]
+    else:
+        chocoinfo["silentArgs"]=installer["InstallerSwitches"]["Silent"]
 templatepath=rootpath.joinpath("templates",installertype)
 choco_package_path=pathlib.Path.cwd().joinpath(chocoid)
 print("Choco package is output to:",choco_package_path)
