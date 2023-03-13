@@ -3,17 +3,20 @@ import sys
 import yaml
 import pathlib
 import packaging.version
+import github_action_utils
 
 #获取winget路径
 winget_id=sys.argv[1]#winget包名
 winget_id=winget_id.split(".")#转为字符串列表形式
 rootpath=pathlib.Path(sys.argv[0]).resolve().parent
 winget_software_path=rootpath.joinpath("winget-pkgs","manifests",winget_id[0][0].lower(),*winget_id)
+
 #最新版本号
 version=str(max([packaging.version.parse(versionpath.name) for versionpath in winget_software_path.iterdir()]))
-os.system(f"echo \"version={version}\" >> $env:GITHUB_ENV")
+github_action_utils.set_env("version",version)
 winget_package_path=winget_software_path.joinpath(version)
 print("Winget package is located in",winget_package_path)
+
 #解析winget包
 for filepath in winget_package_path.iterdir():
     filename=str(filepath)
