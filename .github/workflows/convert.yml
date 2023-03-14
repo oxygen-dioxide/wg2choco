@@ -32,6 +32,9 @@ jobs:
     - name: convert winget package to chocolatey package with wg2choco.py
       run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }}
     
+    - name: zip compress
+      run: 7z a ${{ inputs.chocoid }}.zip ./${{ inputs.chocoid }}/*
+
     - name: choco pack
       run: choco pack ${{ inputs.chocoid }}/${{ inputs.chocoid }}.nuspec
     
@@ -41,8 +44,14 @@ jobs:
     - name: test choco package uninstall
       run: cuninst ${{ inputs.chocoid }}
     
-    - name: upload artifact
+    - name: upload artifact chocolatey nuget package
       uses: actions/upload-artifact@v1.0.0
       with:
         name: ${{ inputs.chocoid }}.${{ env.version }}.nupkg
         path: ${{ inputs.chocoid }}.${{ env.version }}.nupkg
+    
+    - name: upload artifact chocolatey raw package
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: ${{ inputs.chocoid }}.zip
+        path: ${{ inputs.chocoid }}.zip

@@ -49,7 +49,7 @@ else:
     chocoinfo["authors"]=winget_id[0]
 
 if("Installers" in installerinfo):
-    installer = installerinfo | installerinfo["Installers"][0]
+    installer = installerinfo["Installers"][0] | installerinfo
 else:
     installer = installerinfo
 installertype=installer["InstallerType"]
