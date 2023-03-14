@@ -1,6 +1,7 @@
 import os
 import sys
 import yaml
+from   typing import Optional
 import pathlib
 import packaging.version
 import github_action_utils
@@ -12,6 +13,12 @@ rootpath=pathlib.Path(sys.argv[0]).resolve().parent
 winget_software_path=rootpath.joinpath("winget-pkgs","manifests",winget_id[0][0].lower(),*winget_id)
 
 #最新版本号
+def tryParseVersion(versionStr:str) -> Optional[packaging.version.Version]:
+    try:
+        return packaging.version.parse(versionStr)
+    except:
+        return None
+
 version=str(max([packaging.version.parse(versionpath.name) for versionpath in winget_software_path.iterdir()]))
 try:
     github_action_utils.set_env("version",version)
@@ -53,8 +60,7 @@ if("Installers" in installerinfo):
 else:
     installer = installerinfo
 installertype=installer["InstallerType"]
-#import ipdb
-#ipdb.set_trace()
+
 if("InstallerSwitches" in installer):
     if("SilentWithProgress" in installer["InstallerSwitches"]):
         chocoinfo["silentArgs"]=installer["InstallerSwitches"]["SilentWithProgress"]
@@ -65,7 +71,10 @@ choco_package_path=pathlib.Path.cwd().joinpath(chocoid)
 print("Choco package is output to:",choco_package_path)
 
 #递归，把template_current_path的全部文件填入信息后，存入choco_current_path
-def folderwalk(template_current_path,choco_current_path):
+def folderwalk(
+    template_current_path:pathlib.Path,
+    choco_current_path:pathlib.Path
+    ):
     choco_current_path.mkdir(exist_ok=True)
     for template_child in template_current_path.iterdir():
         choco_child=choco_current_path.joinpath(template_child.name.format(**chocoinfo))
