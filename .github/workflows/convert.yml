@@ -11,7 +11,7 @@ on:
         type: string
       admin:
         required: true
-        type: bool
+        type: boolean
 
 jobs:
   convert-winget-package-to-chocolatey:
