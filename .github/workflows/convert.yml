@@ -9,6 +9,9 @@ on:
         description: 'destination package name in chocolatey'
         required: true
         type: string
+      admin:
+        required: true
+        type: bool
 
 jobs:
   convert-winget-package-to-chocolatey:
@@ -29,8 +32,13 @@ jobs:
     - name: download winget package repo
       run: git clone https://github.com/microsoft/winget-pkgs --depth 1
 
-    - name: convert winget package to chocolatey package with wg2choco.py
+    - name: convert (non-admin)
+      if: ${{ !inputs.admin }}
       run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }}
+    
+    - name: convert (admin)
+      if: ${{ !inputs.admin }}
+      run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }} --admin
     
     - name: zip compress
       run: 7z a ${{ inputs.chocoid }}.zip ./${{ inputs.chocoid }}/*
@@ -38,12 +46,22 @@ jobs:
     - name: choco pack
       run: choco pack ${{ inputs.chocoid }}/${{ inputs.chocoid }}.nuspec
     
-    - name: test choco package install
+    - name: test choco package install (non-admin)
+      if: ${{ !inputs.admin }}
+      run: runas /trustlevel:0x20000 "cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg"
+    
+    - name: test choco package uninstall (non-admin)
+      if: ${{ !inputs.admin }}
+      run: runas /trustlevel:0x20000 "cuninst ${{ inputs.chocoid }}"
+
+    - name: test choco package install (admin)
+      if: ${{ inputs.admin }}
       run: cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg
     
-    - name: test choco package uninstall
+    - name: test choco package uninstall (admin)
+      if: ${{ inputs.admin }}
       run: cuninst ${{ inputs.chocoid }}
-    
+
     - name: upload artifact chocolatey nuget package
       uses: actions/upload-artifact@v1.0.0
       with:
