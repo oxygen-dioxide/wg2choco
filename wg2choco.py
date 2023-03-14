@@ -20,10 +20,10 @@ def tryParseVersion(versionStr:str) -> Optional[packaging.version.Version]:
     except:
         return None
 
-version = py_linq.Enumerable(winget_software_path.iterdir()) \
+version = str(py_linq.Enumerable(winget_software_path.iterdir()) \
     .select(lambda x: tryParseVersion(x.name)) \
     .where(lambda x: x is not None) \
-    .max()
+    .max())
 try:
     github_action_utils.set_env("version",version)
 except:
