@@ -24,15 +24,6 @@ version = py_linq.Enumerable(winget_software_path.iterdir()) \
     .select(lambda x: tryParseVersion(x.name)) \
     .where(lambda x: x is not None) \
     .max()
-
-"""list[filter(
-    lambda x: x is not None,
-    map(lambda x: tryParseVersion(x.name), winget_software_path.iterdir())
-    )]"""
-    
-
-
-version=str(max([tryParseVersion(versionpath.name) for versionpath in winget_software_path.iterdir()]))
 try:
     github_action_utils.set_env("version",version)
 except:
