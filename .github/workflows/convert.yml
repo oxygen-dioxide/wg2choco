@@ -57,11 +57,11 @@ jobs:
       run: cuninst ${{ inputs.chocoid }}
 
     - name: test choco package install (admin)
-      if: ${{ inputs.admin }}
+      #if: ${{ inputs.admin }}
       run: cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg
     
     - name: test choco package uninstall (admin)
-      if: ${{ inputs.admin }}
+      #if: ${{ inputs.admin }}
       run: cuninst ${{ inputs.chocoid }}
 
     - name: upload artifact chocolatey nuget package
