@@ -48,12 +48,12 @@ jobs:
     
     - name: test choco package install (non-admin)
       if: ${{ !inputs.admin }}
-      shell: runas /trustlevel:0x20000 cmd
+      shell: runas /trustlevel:0x20000 "C:\Program Files\PowerShell\7\pwsh.EXE -command ^". '{0}'^""
       run: cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg
     
     - name: test choco package uninstall (non-admin)
       if: ${{ !inputs.admin }}
-      shell: runas /trustlevel:0x20000 cmd
+      shell: runas /trustlevel:0x20000 "C:\Program Files\PowerShell\7\pwsh.EXE -command ^". '{0}'^""
       run: cuninst ${{ inputs.chocoid }}
 
     - name: test choco package install (admin)
