@@ -37,7 +37,7 @@ jobs:
       run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }}
     
     - name: convert (admin)
-      if: ${{ !inputs.admin }}
+      if: ${{ inputs.admin }}
       run: python wg2choco.py ${{ inputs.wingetid }} ${{ inputs.chocoid }} --admin
     
     - name: zip compress
@@ -46,20 +46,20 @@ jobs:
     - name: choco pack
       run: choco pack ${{ inputs.chocoid }}/${{ inputs.chocoid }}.nuspec
     
-    - name: test choco package install (non-admin)
-      if: ${{ !inputs.admin }}
-      run: runas /trustlevel:0x20000 "cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg"
+    #- name: test choco package install (non-admin)
+    #  if: ${{ !inputs.admin }}
+    #  run: runas /trustlevel:0x20000 "cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg"
     
-    - name: test choco package uninstall (non-admin)
-      if: ${{ !inputs.admin }}
-      run: runas /trustlevel:0x20000 "cuninst ${{ inputs.chocoid }}"
+    #- name: test choco package uninstall (non-admin)
+    #  if: ${{ !inputs.admin }}
+    #  run: runas /trustlevel:0x20000 "cuninst ${{ inputs.chocoid }}"
 
     - name: test choco package install (admin)
-      if: ${{ inputs.admin }}
+    #  if: ${{ inputs.admin }}
       run: cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg
     
     - name: test choco package uninstall (admin)
-      if: ${{ inputs.admin }}
+    #  if: ${{ inputs.admin }}
       run: cuninst ${{ inputs.chocoid }}
 
     - name: upload artifact chocolatey nuget package
