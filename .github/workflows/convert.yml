@@ -22,10 +22,6 @@ jobs:
         os: 
           - runs-on: windows-latest
             arch: win-x64
-    defaults:
-      run:
-        shell: runas /user:Administrator "msys2 {0}"
-
 
     steps:
     - uses: actions/checkout@v1
