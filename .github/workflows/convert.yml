@@ -59,14 +59,12 @@ jobs:
       run: |
         paexec -u foo -p p@ssw0rd -lo $pwd\output.txt -w $pwd cinst ${{ inputs.chocoid }}.${{ env.version }}.nupkg 
         cat output.txt
-        cat mvntest.txt
     
     - name: test choco package uninstall (non-admin)
       if: ${{ !inputs.admin }}
       run: |
         paexec -u foo -p p@ssw0rd -lo $pwd\output.txt -w $pwd cuninst ${{ inputs.chocoid }}
         cat output.txt
-        cat mvntest.txt
 
     - name: test choco package install (admin)
       #if: ${{ inputs.admin }}
